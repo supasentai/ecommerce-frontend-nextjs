@@ -1,25 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-import {
-  useCart,
-  useClearCart,
-  useRemoveCartItem,
-  useUpdateCartItemQuantity,
-} from "@/hooks/use-cart";
+import { useCart, useClearCart } from "@/hooks/use-cart";
 import { useAuthStore } from "@/store/auth-store";
+
+type CheckoutCartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
 
 export function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const user = useAuthStore((state) => state.user);
   const cartQuery = useCart(mounted && Boolean(user));
-  const updateQuantityMutation = useUpdateCartItemQuantity();
-  const removeItemMutation = useRemoveCartItem();
   const clearCartMutation = useClearCart();
   const cart = cartQuery.data;
-  const items = cart?.items ?? [];
+  const items = (cart?.items ?? []) as CheckoutCartItem[];
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -30,8 +33,7 @@ export function CheckoutPage() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Sửa items, price, quantity theo tên thật trong cart-page.tsx
-  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -161,7 +163,7 @@ export function CheckoutPage() {
           <h2 className="text-xl font-semibold">Order Summary</h2>
 
           <div className="mt-6 space-y-4">
-            {items.map((item: any) => (
+            {items.map((item) => (
               <div key={item.id} className="flex justify-between gap-4 border-b pb-4">
                 <div>
                   <p className="font-medium">{item.name}</p>
