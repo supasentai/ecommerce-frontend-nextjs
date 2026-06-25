@@ -2,6 +2,15 @@
 
 Next.js 15 ecommerce frontend starter using the App Router, TypeScript, Tailwind CSS, shadcn/ui conventions, TanStack Query, Zustand, React Hook Form, Zod, and Axios.
 
+## Sprint 1
+
+Products catalog is available with backend-powered listing and detail pages:
+
+- `/products` - product grid with loading, error, empty, search, category filter, sort, and pagination states
+- `/products/[slug]` - product detail page with name, price, description, category, stock, availability, and an Add to cart placeholder
+
+The backend API must be running and reachable from `NEXT_PUBLIC_API_URL` for product data to load.
+
 ## Requirements
 
 - Node.js 20+
