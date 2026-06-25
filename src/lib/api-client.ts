@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { env } from "@/lib/env";
 
 export const apiClient = axios.create({
@@ -6,4 +6,34 @@ export const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+apiClient.interceptors.request.use((config) => {
+  if (typeof window === "undefined") {
+    return config;
+  }
+
+  const rawAuthState = window.localStorage.getItem("auth-storage");
+
+  if (!rawAuthState) {
+    return config;
+  }
+
+  try {
+    const authState = JSON.parse(rawAuthState) as {
+      state?: {
+        accessToken?: string | null;
+      };
+    };
+    const accessToken = authState.state?.accessToken;
+
+    if (accessToken) {
+      config.headers = AxiosHeaders.from(config.headers);
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+  } catch {
+    window.localStorage.removeItem("auth-storage");
+  }
+
+  return config;
 });
