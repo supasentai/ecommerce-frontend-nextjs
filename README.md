@@ -190,9 +190,143 @@ Important product API notes:
 10. Fill in the demo shipping form.
 11. Place a mock order and return to products after success.
 
-## Screenshots
+## Production Deployment
 
-Screenshots can be added later.
+The frontend is deployed on Vercel and connects to the backend API deployed on Render.
+
+### Production URLs
+
+| Service      | URL                                                  |
+| ------------ | ---------------------------------------------------- |
+| Frontend App | `https://ecommerce-frontend-nextjs-peach.vercel.app` |
+| Backend API  | `https://ecommerce-backend-api-ikyj.onrender.com`    |
+
+### Vercel Configuration
+
+Recommended Vercel settings:
+
+```text
+Framework Preset: Next.js
+Install Command: npm install
+Build Command: npm run build
+Output Directory: .next
+```
+
+### Vercel Environment Variables
+
+Add this environment variable in Vercel:
+
+```env
+NEXT_PUBLIC_API_URL=https://ecommerce-backend-api-ikyj.onrender.com
+```
+
+Apply it to:
+
+```text
+Production
+Preview
+Development
+```
+
+After changing `NEXT_PUBLIC_API_URL`, redeploy the frontend because Next.js embeds `NEXT_PUBLIC_` variables into the client bundle at build time.
+
+### Local Development with Production Backend
+
+To run the frontend locally while using the deployed Render backend, create `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=https://ecommerce-backend-api-ikyj.onrender.com
+```
+
+Then restart the dev server:
+
+```bash
+npm run dev
+```
+
+If the app still calls `http://localhost:3000`, clear the local Next.js cache and restart:
+
+```powershell
+Remove-Item -Recurse -Force .next
+npm run dev
+```
+
+### Backend CORS Requirement
+
+The backend Render service must allow the Vercel frontend origin.
+
+Set this environment variable on Render:
+
+```env
+FRONTEND_URL=https://ecommerce-frontend-nextjs-peach.vercel.app
+```
+
+Then redeploy the backend service.
+
+### Demo Login
+
+Use one of the seeded backend accounts:
+
+```text
+Email: user1@example.com
+Password: Password123!
+```
+
+Other demo accounts:
+
+```text
+admin@example.com / Password123!
+user2@example.com / Password123!
+```
+
+### Production Verification Checklist
+
+After deployment, test:
+
+```text
+/products
+/products/<product-id>
+/login
+/cart
+/checkout
+```
+
+Expected behavior:
+
+1. Product listing loads from the Render backend.
+2. Login succeeds with a seeded account.
+3. Product detail pages use product IDs.
+4. Authenticated users can add items to cart.
+5. Cart and checkout pages can read authenticated cart data.
+
+### Troubleshooting
+
+If products fail to load:
+
+1. Confirm the backend endpoint works:
+
+```text
+https://ecommerce-backend-api-ikyj.onrender.com/products
+```
+
+2. Confirm Vercel has:
+
+```env
+NEXT_PUBLIC_API_URL=https://ecommerce-backend-api-ikyj.onrender.com
+```
+
+3. Redeploy the frontend after editing Vercel environment variables.
+
+If login sends requests to:
+
+```text
+http://localhost:3000/auth/login
+```
+
+then the frontend was built with the wrong API URL. Update `NEXT_PUBLIC_API_URL`, clear cache if local, and rebuild/redeploy.
+
+If the browser shows a CORS error, update the backend Render `FRONTEND_URL` to the exact Vercel production URL and redeploy the backend.
+
 
 ## Future Improvements
 
