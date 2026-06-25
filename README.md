@@ -11,6 +11,25 @@ Products catalog is available with backend-powered listing and detail pages:
 
 The backend API must be running and reachable from `NEXT_PUBLIC_API_URL` for product data to load.
 
+## Sprint 2
+
+Authentication pages are available and connected to the backend auth API:
+
+- `/login` - login form with React Hook Form, Zod validation, TanStack Query mutation, token storage, and redirect to `/products`
+- `/register` - registration form with validation and redirect to `/login`
+- Header auth state - shows Login/Register when signed out, or user email + Logout when signed in
+
+Demo flow:
+
+1. Start the backend API and set `NEXT_PUBLIC_API_URL` in `.env.local`.
+2. Run `npm run dev`.
+3. Open `/register` to create a user.
+4. Login from `/login`.
+5. After login, the app stores the auth session locally and redirects to `/products`.
+6. Use Logout in the header to call `/auth/logout`, clear local auth state, and return to `/login`.
+
+Tokens are currently stored with Zustand + `localStorage` for development. HttpOnly cookies should be used for a production hardening pass.
+
 ## Requirements
 
 - Node.js 20+
