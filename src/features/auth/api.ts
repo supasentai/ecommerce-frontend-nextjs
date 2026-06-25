@@ -4,6 +4,7 @@ import type {
   AuthSession,
   LoginPayload,
   RefreshTokenPayload,
+  RegisterBackendResponse,
   RegisterPayload,
 } from "./types";
 
@@ -29,6 +30,32 @@ function normalizeAuthResponse(payload: AuthBackendResponse): AuthSession {
   };
 }
 
+function isAuthUser(value: unknown): value is RegisterBackendResponse & { email: string } {
+  return Boolean(value && typeof value === "object" && "email" in value);
+}
+
+function normalizeRegisterResponse(payload: RegisterBackendResponse) {
+  if (isAuthUser(payload)) {
+    return payload;
+  }
+
+  if (payload.data) {
+    if (isAuthUser(payload.data)) {
+      return payload.data;
+    }
+
+    if (payload.data.user) {
+      return payload.data.user;
+    }
+  }
+
+  if (payload.user) {
+    return payload.user;
+  }
+
+  throw new Error("Invalid register response from backend.");
+}
+
 export async function login(payload: LoginPayload) {
   const response = await apiClient.post<AuthBackendResponse>("/auth/login", payload);
 
@@ -36,9 +63,9 @@ export async function login(payload: LoginPayload) {
 }
 
 export async function register(payload: RegisterPayload) {
-  const response = await apiClient.post<AuthBackendResponse>("/auth/register", payload);
+  const response = await apiClient.post<RegisterBackendResponse>("/auth/register", payload);
 
-  return normalizeAuthResponse(response.data);
+  return normalizeRegisterResponse(response.data);
 }
 
 export async function refreshToken(payload: RefreshTokenPayload) {
