@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { useCategories, useProducts } from "@/hooks/use-products";
-import type { ProductSort } from "../types";
+import type { ProductListParams, ProductSort } from "../types";
 import { ProductCard } from "./product-card";
 
 const PAGE_SIZE = 12;
@@ -18,10 +18,18 @@ const sortOptions: Array<{ value: ProductSort; label: string }> = [
   { value: "name_desc", label: "Name: Z to A" },
 ];
 
+const sortParamsByOption: Record<ProductSort, Pick<ProductListParams, "sortBy" | "sortOrder">> = {
+  newest: { sortBy: "createdAt", sortOrder: "desc" },
+  price_asc: { sortBy: "price", sortOrder: "asc" },
+  price_desc: { sortBy: "price", sortOrder: "desc" },
+  name_asc: { sortBy: "name", sortOrder: "asc" },
+  name_desc: { sortBy: "name", sortOrder: "desc" },
+};
+
 export function ProductCatalog() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [sort, setSort] = useState<ProductSort>("newest");
   const deferredSearch = useDeferredValue(search);
 
@@ -30,10 +38,10 @@ export function ProductCatalog() {
       page,
       limit: PAGE_SIZE,
       search: deferredSearch.trim() || undefined,
-      category: category || undefined,
-      sort,
+      categoryId: categoryId || undefined,
+      ...sortParamsByOption[sort],
     }),
-    [category, deferredSearch, page, sort],
+    [categoryId, deferredSearch, page, sort],
   );
 
   const productsQuery = useProducts(queryParams);
@@ -73,9 +81,9 @@ export function ProductCatalog() {
           aria-label="Search products"
         />
         <Select
-          value={category}
+          value={categoryId}
           onChange={(event) => {
-            setCategory(event.target.value);
+            setCategoryId(event.target.value);
             resetToFirstPage();
           }}
           aria-label="Filter by category"
@@ -83,7 +91,7 @@ export function ProductCatalog() {
         >
           <option value="">All categories</option>
           {categoriesQuery.data?.map((item) => (
-            <option key={item.id} value={item.slug ?? item.id}>
+            <option key={item.id} value={item.id}>
               {item.name}
             </option>
           ))}

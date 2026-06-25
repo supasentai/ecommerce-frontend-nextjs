@@ -114,8 +114,9 @@ export async function getProducts(params: ProductListParams = {}) {
       page: params.page ?? 1,
       limit: params.limit ?? DEFAULT_LIMIT,
       search: params.search,
-      category: params.category,
-      sort: params.sort,
+      categoryId: params.categoryId,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
     }),
   });
 

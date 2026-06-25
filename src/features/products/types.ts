@@ -22,13 +22,16 @@ export type Product = {
 };
 
 export type ProductSort = "newest" | "price_asc" | "price_desc" | "name_asc" | "name_desc";
+export type ProductSortBy = "createdAt" | "price" | "name";
+export type ProductSortOrder = "asc" | "desc";
 
 export type ProductListParams = {
   page?: number;
   limit?: number;
   search?: string;
-  category?: string;
-  sort?: ProductSort;
+  categoryId?: string;
+  sortBy?: ProductSortBy;
+  sortOrder?: ProductSortOrder;
 };
 
 export type PaginationMeta = {
