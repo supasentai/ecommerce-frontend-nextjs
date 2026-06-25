@@ -1,7 +1,7 @@
 import type { Product } from "./types";
 
 export function getProductSlug(product: Product) {
-  return product.slug ?? product.id;
+  return product.id;
 }
 
 export function getProductCategoryLabel(product: Product) {
