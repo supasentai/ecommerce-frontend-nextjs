@@ -12,6 +12,10 @@ export function getProductCategoryLabel(product: Product) {
   return product.category?.name ?? product.categoryName ?? "Uncategorized";
 }
 
+export function getProductImageUrl(product: Product) {
+  return product.imageUrl ?? product.images?.[0] ?? null;
+}
+
 export function isProductAvailable(product: Product) {
   const inactiveStatuses = ["inactive", "unavailable", "draft", "archived"];
   const hasInactiveStatus = product.status
