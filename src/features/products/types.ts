@@ -51,7 +51,14 @@ export type ProductListResult = {
 export type ProductsBackendResponse =
   | Product[]
   | {
-      data?: Product[] | { items?: Product[]; products?: Product[]; meta?: Partial<PaginationMeta> };
+      data?:
+        | Product[]
+        | {
+            data?: Product[];
+            items?: Product[];
+            products?: Product[];
+            meta?: Partial<PaginationMeta>;
+          };
       items?: Product[];
       products?: Product[];
       meta?: Partial<PaginationMeta>;

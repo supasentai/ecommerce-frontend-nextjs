@@ -72,7 +72,11 @@ function normalizeProductsResponse(
   const nestedData = payload.data && !Array.isArray(payload.data) ? payload.data : undefined;
   const items = Array.isArray(payload.data)
     ? payload.data
-    : (payload.items ?? payload.products ?? nestedData?.items ?? nestedData?.products ?? []);
+    : (payload.items ??
+      payload.products ??
+      nestedData?.items ??
+      nestedData?.products ??
+      (Array.isArray(nestedData?.data) ? nestedData.data : []));
 
   return {
     items,
