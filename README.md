@@ -1,51 +1,89 @@
-# ecommerce-frontend-nextjs
+# Next.js E-commerce Frontend
 
-Next.js 15 ecommerce frontend starter using the App Router, TypeScript, Tailwind CSS, shadcn/ui conventions, TanStack Query, Zustand, React Hook Form, Zod, and Axios.
+## Overview
 
-## Sprint 1
+This repository contains the frontend for a full-stack e-commerce project. The application is built with Next.js, TypeScript, and Tailwind CSS, and consumes a NestJS REST API for product, authentication, and cart data.
 
-Products catalog is available with backend-powered listing and detail pages:
+The project demonstrates a practical storefront flow: browsing products, viewing product details, authenticating users, managing a cart, and completing a demo checkout experience.
 
-- `/products` - product grid with loading, error, empty, search, category filter, sort, and pagination states
-- `/products/[slug]` - product detail page with name, price, description, category, stock, availability, and an Add to cart placeholder
+Local development URLs:
 
-The backend API must be running and reachable from `NEXT_PUBLIC_API_URL` for product data to load.
+- Frontend: [http://localhost:3001](http://localhost:3001)
+- Backend API: [http://localhost:3000](http://localhost:3000)
 
-## Sprint 2
+## Features
 
-Authentication pages are available and connected to the backend auth API:
+- Product listing page with pagination, search, category filtering, and sorting
+- Product detail page using backend product IDs
+- Login and registration pages connected to the backend auth API
+- Auth session storage with Zustand and localStorage for development
+- Add to cart from the product detail page
+- Authenticated cart page
+- Increase and decrease cart item quantity
+- Remove cart items
+- Clear cart
+- Cart item subtotal and cart total calculation
+- Empty cart state
+- Checkout page
+- Checkout order summary
+- Required-field validation for demo shipping information
+- Mock place order success flow
+- Clear cart after successful demo checkout
+- Responsive layout with reusable UI primitives
 
-- `/login` - login form with React Hook Form, Zod validation, TanStack Query mutation, token storage, and redirect to `/products`
-- `/register` - registration form with validation and redirect to `/login`
-- Header auth state - shows Login/Register when signed out, or user email + Logout when signed in
+## Tech Stack
 
-Demo flow:
+- Next.js 15 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- TanStack Query
+- Zustand
+- React Hook Form
+- Zod
+- Axios
+- ESLint
+- Prettier
 
-1. Start the backend API and set `NEXT_PUBLIC_API_URL` in `.env.local`.
-2. Run `npm run dev`.
-3. Open `/register` to create a user.
-4. Login from `/login`.
-5. After login, the app stores the auth session locally and redirects to `/products`.
-6. Use Logout in the header to call `/auth/logout`, clear local auth state, and return to `/login`.
+## Project Structure
 
-Tokens are currently stored with Zustand + `localStorage` for development. HttpOnly cookies should be used for a production hardening pass.
+```text
+src/
+|-- app/
+|   |-- cart/
+|   |-- checkout/
+|   |-- login/
+|   |-- products/
+|   |   |-- [slug]/
+|   |   `-- page.tsx
+|   |-- register/
+|   |-- globals.css
+|   |-- layout.tsx
+|   `-- page.tsx
+|-- components/
+|   |-- layout/
+|   |-- ui/
+|   `-- providers.tsx
+|-- features/
+|   |-- auth/
+|   |-- cart/
+|   |-- checkout/
+|   `-- products/
+|-- hooks/
+|-- lib/
+|-- store/
+`-- types/
+```
 
-## Sprint 3
+## Getting Started
 
-Shopping cart UI is available and connected to the backend cart API:
+### Prerequisites
 
-- `/cart` - authenticated cart page with loading, error, empty, item list, quantity controls, remove item, clear cart, totals, and Checkout placeholder
-- Product detail Add to cart - calls the backend cart API and redirects signed-out users to `/login`
-- Header cart link - links to `/cart` and shows the cart item count when the user is signed in
-
-Login is required before adding products to the cart or viewing cart contents. Checkout and order creation are intentionally out of scope for this sprint.
-
-## Requirements
-
-- Node.js 20+
+- Node.js 20 or newer
 - npm
+- Running backend API at `http://localhost:3000`
 
-## Setup
+### Installation
 
 Install dependencies:
 
@@ -59,24 +97,111 @@ Create a local environment file:
 cp .env.example .env.local
 ```
 
-Start the development server:
+Start the frontend development server on port `3001`:
+
+```bash
+npm run dev -- --port 3001
+```
+
+Open [http://localhost:3001](http://localhost:3001).
+
+## Environment Variables
+
+The frontend reads public runtime configuration from `.env.local`.
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+| Variable | Description | Default/example |
+| --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL for the NestJS backend REST API | `http://localhost:3000` |
+
+## Available Scripts
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Starts the Next.js development server. Use `npm run dev -- --port 3001` when the backend is running on port `3000`.
 
-## Scripts
+```bash
+npm run build
+```
 
-- `npm run dev` - start the local development server
-- `npm run lint` - run ESLint
-- `npm run build` - create a production build
-- `npm run format` - format files with Prettier
-- `npm run format:check` - check formatting with Prettier
+Creates a production build.
 
-## Environment Variables
+```bash
+npm run start
+```
 
-| Name | Description |
-| --- | --- |
-| `NEXT_PUBLIC_API_URL` | Base URL for the backend API |
+Starts the production server after a successful build.
+
+```bash
+npm run lint
+```
+
+Runs ESLint.
+
+```bash
+npm run format
+```
+
+Formats the project with Prettier.
+
+```bash
+npm run format:check
+```
+
+Checks formatting without writing changes.
+
+## Backend API
+
+This frontend is designed to work with the companion NestJS backend API running locally at:
+
+```text
+http://localhost:3000
+```
+
+The frontend currently calls backend endpoints for:
+
+- Product listing and product detail
+- Category data for product filtering
+- User login and registration
+- Cart retrieval and cart item mutations
+
+Important product API notes:
+
+- Product listing uses `/products` with supported query parameters such as `page`, `limit`, `search`, `categoryId`, `sortBy`, and `sortOrder`.
+- Product detail links use product IDs because the backend supports `GET /products/:id`.
+- Slug lookup is not assumed by the frontend.
+
+## User Flow
+
+1. Start the backend API at `http://localhost:3000`.
+2. Start the frontend at `http://localhost:3001`.
+3. Open the product catalog at `/products`.
+4. Search, filter, sort, and paginate products.
+5. Open a product detail page.
+6. Register or log in.
+7. Add a product to the cart.
+8. Open `/cart` to update quantities, remove items, clear the cart, or review totals.
+9. Continue to `/checkout`.
+10. Fill in the demo shipping form.
+11. Place a mock order and return to products after success.
+
+## Screenshots
+
+Screenshots can be added later.
+
+## Future Improvements
+
+- Replace demo checkout with real backend order creation
+- Add order history for authenticated users
+- Add production-ready payment integration
+- Improve checkout validation with a shared schema
+- Add product images and image optimization
+- Add automated tests for product, cart, and checkout flows
+- Rename the product detail route from `[slug]` to `[id]` for clearer intent
+- Harden authentication for production, such as using HttpOnly cookies
+- Add loading skeletons and error recovery for checkout
