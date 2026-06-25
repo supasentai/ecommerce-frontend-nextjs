@@ -9,15 +9,15 @@ import type {
 } from "./types";
 
 function normalizeAuthResponse(payload: AuthBackendResponse): AuthSession {
-  const data = "data" in payload ? payload.data : undefined;
-  const user = data?.user ?? ("user" in payload ? payload.user : undefined);
+  const authData = ("data" in payload && payload.data ? payload.data : payload) as Partial<
+    AuthSession & {
+      token?: string;
+    }
+  >;
+  const user = authData.user;
   const accessToken =
-    data?.accessToken ??
-    data?.token ??
-    ("accessToken" in payload ? payload.accessToken : undefined) ??
-    ("token" in payload ? payload.token : undefined);
-  const refreshToken =
-    data?.refreshToken ?? ("refreshToken" in payload ? payload.refreshToken : undefined);
+    authData.accessToken ?? authData.token ?? ("token" in payload ? payload.token : undefined);
+  const refreshToken = authData.refreshToken;
 
   if (!user || !accessToken) {
     throw new Error("Invalid auth response from backend.");

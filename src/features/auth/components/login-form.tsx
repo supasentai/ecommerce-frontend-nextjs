@@ -10,11 +10,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { login } from "@/features/auth/api";
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas";
+import { API_BASE_URL } from "@/lib/api-client";
 import { useAuthStore } from "@/store/auth-store";
 
+function getBackendMessage(data: unknown) {
+  if (data && typeof data === "object" && "message" in data) {
+    const message = (data as { message?: unknown }).message;
+
+    if (Array.isArray(message)) {
+      return message.join(", ");
+    }
+
+    if (typeof message === "string") {
+      return message;
+    }
+  }
+
+  return undefined;
+}
+
 function getErrorMessage(error: unknown) {
-  if (axios.isAxiosError<{ message?: string }>(error)) {
-    return error.response?.data?.message ?? "Unable to login. Check your credentials.";
+  if (axios.isAxiosError(error)) {
+    const backendMessage = getBackendMessage(error.response?.data);
+    const status = error.response?.status;
+    const requestUrl = `${error.config?.baseURL ?? API_BASE_URL}${error.config?.url ?? ""}`;
+
+    if (backendMessage) {
+      return backendMessage;
+    }
+
+    if (status) {
+      return `Login request failed (${status}) at ${requestUrl}.`;
+    }
+
+    return error.message || "Unable to reach the backend login endpoint.";
   }
 
   if (error instanceof Error) {

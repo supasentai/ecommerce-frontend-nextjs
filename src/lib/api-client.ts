@@ -1,8 +1,10 @@
 import axios, { AxiosHeaders } from "axios";
 import { env } from "@/lib/env";
 
+export const API_BASE_URL = env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+
 export const apiClient = axios.create({
-  baseURL: env.NEXT_PUBLIC_API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

@@ -27,6 +27,8 @@ export type AuthSession = {
 export type AuthBackendResponse =
   | AuthSession
   | {
+      success?: boolean;
+      message?: string;
       data?: Partial<AuthSession> & {
         token?: string;
       };
