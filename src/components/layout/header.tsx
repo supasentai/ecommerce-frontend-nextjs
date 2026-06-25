@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartLink } from "@/features/cart/components/cart-link";
 import { AuthNav } from "@/features/auth/components/auth-nav";
 
 const navigation = [
@@ -26,7 +27,8 @@ export function Header() {
             ))}
           </nav>
         </div>
-        <div className="text-sm font-medium text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+          <CartLink />
           <AuthNav />
         </div>
       </div>

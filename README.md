@@ -30,6 +30,16 @@ Demo flow:
 
 Tokens are currently stored with Zustand + `localStorage` for development. HttpOnly cookies should be used for a production hardening pass.
 
+## Sprint 3
+
+Shopping cart UI is available and connected to the backend cart API:
+
+- `/cart` - authenticated cart page with loading, error, empty, item list, quantity controls, remove item, clear cart, totals, and Checkout placeholder
+- Product detail Add to cart - calls the backend cart API and redirects signed-out users to `/login`
+- Header cart link - links to `/cart` and shows the cart item count when the user is signed in
+
+Login is required before adding products to the cart or viewing cart contents. Checkout and order creation are intentionally out of scope for this sprint.
+
 ## Requirements
 
 - Node.js 20+

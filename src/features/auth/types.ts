@@ -36,6 +36,15 @@ export type AuthBackendResponse =
       refreshToken?: string;
     };
 
+export type RegisterBackendResponse =
+  | AuthUser
+  | {
+      success?: boolean;
+      data?: AuthUser | { user?: AuthUser };
+      user?: AuthUser;
+      message?: string;
+    };
+
 export type RefreshTokenPayload = {
   refreshToken: string;
 };

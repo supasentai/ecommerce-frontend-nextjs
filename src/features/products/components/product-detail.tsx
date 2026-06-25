@@ -1,8 +1,12 @@
 "use client";
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAddToCart } from "@/hooks/use-cart";
 import { useProductDetail } from "@/hooks/use-products";
+import { useAuthStore } from "@/store/auth-store";
 import {
   formatProductPrice,
   getProductCategoryLabel,
@@ -14,7 +18,10 @@ type ProductDetailProps = {
 };
 
 export function ProductDetail({ slugOrId }: ProductDetailProps) {
-  const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const router = useRouter();
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const addToCartMutation = useAddToCart();
   const productQuery = useProductDetail(slugOrId);
   const product = productQuery.data;
 
@@ -50,6 +57,12 @@ export function ProductDetail({ slugOrId }: ProductDetailProps) {
   }
 
   const available = isProductAvailable(product);
+  const addToCartError =
+    addToCartMutation.isError && axios.isAxiosError<{ message?: string }>(addToCartMutation.error)
+      ? (addToCartMutation.error.response?.data?.message ?? "Unable to add item to cart.")
+      : addToCartMutation.isError
+        ? "Unable to add item to cart."
+        : null;
 
   return (
     <section className="container py-10">
@@ -101,15 +114,31 @@ export function ProductDetail({ slugOrId }: ProductDetailProps) {
           <Button
             size="lg"
             className="w-full"
-            disabled={!available}
-            onClick={() => setShowPlaceholder(true)}
+            disabled={!available || addToCartMutation.isPending}
+            onClick={() => {
+              if (!accessToken) {
+                router.push("/login");
+                return;
+              }
+
+              addToCartMutation.mutate(
+                { productId: product.id, quantity: 1 },
+                {
+                  onSuccess: () => setCartMessage("Added to cart."),
+                  onError: (error) => {
+                    if (axios.isAxiosError(error) && error.response?.status === 401) {
+                      router.push("/login");
+                    }
+                  },
+                },
+              );
+            }}
           >
-            Add to cart
+            {addToCartMutation.isPending ? "Adding..." : "Add to cart"}
           </Button>
-          {showPlaceholder ? (
-            <p className="text-sm text-muted-foreground">
-              Cart API integration is intentionally out of scope for Sprint 1.
-            </p>
+          {cartMessage ? <p className="text-sm text-primary">{cartMessage}</p> : null}
+          {addToCartError ? (
+            <p className="text-sm text-destructive">{addToCartError}</p>
           ) : null}
         </div>
       </div>
